@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { TextInput, View, StyleSheet, Text, Button } from 'react-native';
+import { TextInput, View, StyleSheet, Text, Button, AsyncStorage } from 'react-native';
 import { Image } from "react-native-elements";
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 const Logo = require('./../../assets/logo.png');
 import { login } from '../../store/ducks/auth'
+import { navigate } from '~/services/navigation';
+import { getToken } from '../../data/driver'
 
 // import { Container } from './styles';
 
@@ -18,6 +20,17 @@ class Login extends Component {
     }
     this.login.bind(this);
   }
+
+  componentDidMount(){
+    AsyncStorage.getItem("@driver/token")
+      .then(value => {
+        console.log(value)
+        if(value){
+          navigate('App');
+        }
+    })
+  }
+
 
   login(){
     this.props.login(this.state.email, this.state.password)
