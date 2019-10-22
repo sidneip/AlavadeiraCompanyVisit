@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { View, FlatList, Text, ActivityIndicator } from 'react-native';
+import { View, FlatList, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { ListItem, Header } from 'react-native-elements'
 
 import { bindActionCreators } from 'redux';
@@ -27,7 +27,7 @@ class Main extends Component {
         title={item.customer.name}
         subtitle={item.trajectory}
         leftIcon={{ name: 'directions-car' }}
-        onPress={() => { navigate('Visit')}}
+        onPress={() => { navigate('Visit', {visitId: item.id})}}
         bottomDivider
         chevron
       />
@@ -36,14 +36,15 @@ class Main extends Component {
 
   render() {
     return(
-      <View styles={ {flex:1, paddingTop:22}}>
-         {this.props.loading && 
-          <ActivityIndicator size="large" alignItems="center" justifyContent="center"  color="#0000ff" />
+      <View styles={styles.container}>
+        {this.props.loading &&
+          <ActivityIndicator  style={styles.loading}  size="large"  color="#0000ff" />
         }
 
         <FlatList 
         data={this.props.visits}
-        renderItem={this.renderItem} 
+        renderItem={this.renderItem}
+        keyExtractor={item => item.id.toString()}
         />
       </View>
     )
@@ -56,6 +57,22 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ fetch }, dispatch);
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 70
+  },
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 80,
+    marginTop:'50%'
+  }
+})
 
 export default connect(
   mapStateToProps,

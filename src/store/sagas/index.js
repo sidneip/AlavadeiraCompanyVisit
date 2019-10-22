@@ -12,12 +12,20 @@ function* fetchVisitsAction(){
 }
 
 function* fetchVisits({payload}){
-  let response = yield call(fetchVisitsRequest)
-  yield put({ type: VisitTypes.UPDATE_VISITS, payload: response.data.data.visits })
+  try {
+    let response = yield call(fetchVisitsRequest)
+    yield put({ type: VisitTypes.UPDATE_VISITS, payload: response.data.data.visits })
+  } catch (error) {
+    
+  }
 }
 
 function fetchVisitsRequest(){
-  return api.get('/visits', {})
+  try {
+    return api.get('/visits', {})
+  } catch (error) {
+    
+  }
 }
 
 function* loginAction(){
