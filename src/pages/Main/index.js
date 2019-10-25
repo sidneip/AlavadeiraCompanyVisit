@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import { View, FlatList, StyleSheet, Text, ActivityIndicator } from 'react-native';
-import { ListItem, Header } from 'react-native-elements'
+import { ListItem, Header, Button } from 'react-native-elements'
 
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -10,6 +10,10 @@ import { navigate } from '~/services/navigation';
 // import { Container } from './styles';
 
 class Main extends Component {
+  static navigationOptions = {
+    title: 'Visitas'
+  };
+
   constructor(props){
     super(props);
     this.state = {
@@ -27,7 +31,7 @@ class Main extends Component {
         title={item.customer.name}
         subtitle={item.trajectory}
         leftIcon={{ name: 'directions-car' }}
-        onPress={() => { navigate('Visit', {visitId: item.id})}}
+        onPress={() => { navigate('Visit', {visitId: item.id, customName: item.customer.name})}}
         bottomDivider
         chevron
       />

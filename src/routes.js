@@ -5,7 +5,23 @@ import Main from '~/pages/Main/index';
 import Login from '~/pages/Login'
 import Visit from '~/pages/Visit'
 
-const AppStack = createStackNavigator({Main: Main, Visit: Visit});
+const AppStack = createStackNavigator(
+  {
+    Main: {
+      screen: Main,
+    }, 
+    Visit: {
+      screen: Visit
+    }
+  },
+  {
+    navigationOptions: () => ({
+      headerTitleStyle: {
+        fontWeight: 'normal',
+      },
+    }),
+  }
+);
 
 const AuthStack = createStackNavigator({Login: {screen: Login, navigationOptions: {header: null}}})
 const Routes = createAppContainer(
