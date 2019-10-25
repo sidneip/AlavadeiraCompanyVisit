@@ -42,11 +42,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   footerButtons: {
-    flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'left',
-    bottom: 0,
-    left: 0
   }
 })
 const mapStateToProps = (state, props) => {
@@ -55,6 +50,7 @@ const mapStateToProps = (state, props) => {
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators({}, dispatch);
+
 
 export default connect(
   mapStateToProps,

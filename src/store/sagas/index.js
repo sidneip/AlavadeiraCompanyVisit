@@ -38,12 +38,12 @@ function* login({payload}){
     let response = yield call(loginRequest, payload)
     console.tron.logImportant(response.data)
     saveDriverData(response)
+    yield put({ type: Types.SUCCESS_LOGIN, payload: response.data });
+    yield call(saveToken, response.data.token)
+    yield call(navigate, 'Home')
   } catch (error) {
     console.tron.logImportant(error)
   }
-  // yield put({ type: Types.SUCCESS_LOGIN, payload: response.data });
-  // yield call(saveToken, response.data.token)
-  // yield call(navigate, 'Home')
 }
 
 async function saveDriverData(response) {
