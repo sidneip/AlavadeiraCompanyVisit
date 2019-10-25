@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
 
 import { View, StyleSheet } from 'react-native';
-import { Button, Text, Card, Icon } from 'react-native-elements'
+import { Button, Text, Card, Icon, ListItem } from 'react-native-elements'
 
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RNCamera } from 'react-native-camera';
+
+import styles from './style'
 
 // import { Container } from './styles';
 
 class Visit extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
-      title: `Visita ${navigation.getParam('visitId', 'A Nested Details Screen').toString()} - ${navigation.getParam('customName')}`,
+      title: `Visita ${navigation.getParam('customName')}`,
     };
   };
   constructor(props){
@@ -24,51 +26,62 @@ class Visit extends Component {
       collecteds: []
     }
   }
+
+  readDeliveryItem(){
+    this.setState({showCamera: !this.state.showCamera})
+  }
+
+  barcodeRecognized(code){
+    alert(code)
+    this.setState({
+      collecteds: [...this.state.collecteds, code]
+    })
+  }
+
   render() {
     return (
       <View style={styles.container}>
+        {!this.state.showCamera && 
         <View style={styles.visitData}>
-          <Text h3> Visita: {this.props.visit.id}</Text>
-          <Card title="Entregas">
+          <Card title="Entregas" >
             {
               this.props.visit.deliverables.map((delivery, i) => {
                 return (
-                  <View key={i} style={styles.user}>
-                    <View>
-                      <Icon
-                        reverse
-                        name='shopping-bag'
-                        type='feather'
-                        color='#517fa4'
-                      />
-
-                      <Text>{delivery.barcode}</Text>
-                    </View>
-                  </View>
+                  <ListItem
+                    key={i}
+                    roundAvatar
+                    title={delivery.barcode}
+                    subtitle="teste"
+                    leftIcon={{ name: 'shopping-bag', type: 'feather', color: '#517fa4' }}
+                  />
                 );
               })
             }
           </Card>
         </View>
+        }
         {this.state.showCamera && 
         <View style={styles.cameraView}>
           <RNCamera
             ref={ref => {
               this.camera = ref;
             }}
-            style={{
-              flex: 1,
-              width: '100%',
-            }}  
+            style={styles.camera}  
             onGoogleVisionBarcodesDetected={this.barcodeRecognized}
           >
           </RNCamera>
+          <Button
+          title="Fechar"
+          containerStyle={{flex: 1, flexWrap: 'nowrap', justifyContent: 'flex-end', alignItems: 'center'}}
+          onPress={() => this.readDeliveryItem()}
+        />
         </View>
         }
         <View style={styles.footerButtons}>
         <Button
           title="Entregar"
           containerStyle={{width: '50%'}}
+          onPress={() => this.readDeliveryItem()}
         />
         <Button
           title="Coletar"
@@ -80,35 +93,6 @@ class Visit extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  visitData: {
-    flex: 1,
-    width: '100%'
-  },
-  cameraView: {
-    flex: 1,
-    width: '100%',
-    height: 100,
-  }, 
-  camera: {
-    flex: 1,
-    marginTop: 10,
-    top: 10,
-    height: 20,
-  },
-  footerButtons: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    marginBottom: 5
-  }
-})
 const mapStateToProps = (state, props) => {
   return {visit: state.visitReducer.visits.filter(item => item.id == props.navigation.getParam('visitId'))[0]}
 };
