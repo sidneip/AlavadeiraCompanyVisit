@@ -14,6 +14,7 @@ function* fetchVisitsAction(){
 function* fetchVisits({payload}){
   try {
     let response = yield call(fetchVisitsRequest)
+    console.log(response.data.data)
     yield put({ type: VisitTypes.UPDATE_VISITS, payload: response.data.data.visits })
   } catch (error) {
     
@@ -42,6 +43,7 @@ function* login({payload}){
     yield call(saveToken, response.data.token)
     yield call(navigate, 'Home')
   } catch (error) {
+    console.log(error)
     console.tron.logImportant(error)
   }
 }

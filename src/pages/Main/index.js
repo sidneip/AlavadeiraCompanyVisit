@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { View, FlatList, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { View, FlatList, StyleSheet, Text, ActivityIndicator, AsyncStorage } from 'react-native';
 import { ListItem, Header, Button } from 'react-native-elements'
 
 import { bindActionCreators } from 'redux';

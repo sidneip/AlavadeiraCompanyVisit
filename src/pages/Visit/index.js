@@ -31,11 +31,14 @@ class Visit extends Component {
     this.setState({showCamera: !this.state.showCamera})
   }
 
-  barcodeRecognized(code){
-    alert(code)
-    this.setState({
-      collecteds: [...this.state.collecteds, code]
-    })
+  barcodeRecognized(data){
+    console.log(data)
+    if(data.barcodes.length > 0){
+      this.setState({
+        collecteds: [...this.state.collecteds, data.barcodes[0].data]
+      })
+      this.setState({showCamera: false})
+    }
   }
 
   render() {
@@ -67,7 +70,7 @@ class Visit extends Component {
               this.camera = ref;
             }}
             style={styles.camera}  
-            onGoogleVisionBarcodesDetected={this.barcodeRecognized}
+            onGoogleVisionBarcodesDetected={this.barcodeRecognized.bind(this)}
           >
           </RNCamera>
           <Button
