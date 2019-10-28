@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 
-import { View, FlatList, StyleSheet, Text, ActivityIndicator, AsyncStorage } from 'react-native';
-import { ListItem, Header, Button } from 'react-native-elements'
+import { View, FlatList, StyleSheet, RefreshControl, ActivityIndicator, AsyncStorage, SectionList } from 'react-native';
+import { ListItem, Header, Button, Text} from 'react-native-elements'
 
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { fetch } from '../../store/ducks/visit'
 import { navigate } from '~/services/navigation';
+import _ from 'lodash'
 // import { Container } from './styles';
 
 class Main extends Component {
@@ -17,25 +18,38 @@ class Main extends Component {
   constructor(props){
     super(props);
     this.state = {
-      visits: []
+      visits: [],
+      refreshing: false
     }
   }
   componentDidMount(){
+    AsyncStorage.clear()
     this.props.fetch()
-    console.log('montou')
+    let visits = _.chain(this.props.visits)
+        // Group the elements of Array based on `color` property
+        .groupBy("trajectory")
+        // `key` is group's name (color), `value` is the array of objects
+        .map((value, key) => ({ title: key, data: value }))
+        .orderBy(value => {value.data.priority})
+        .value()
+    this.setState({visits: visits})
   }
 
   renderItem({item}) {
     return(
       <ListItem
         title={item.customer.name}
-        subtitle={item.trajectory}
+        subtitle={`${item.address.street} - ${item.address.number}`}
         leftIcon={{ name: 'directions-car' }}
         onPress={() => { navigate('Visit', {visitId: item.id, customName: item.customer.name})}}
         bottomDivider
         chevron
       />
     )
+  }
+
+  onRefresh(){
+    this.props.fetch()
   }
 
   render() {
@@ -45,10 +59,20 @@ class Main extends Component {
           <ActivityIndicator  style={styles.loading}  size="large"  color="#0000ff" />
         }
 
-        <FlatList 
-        data={this.props.visits}
+        <SectionList
+        sections={this.state.visits}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh.bind(this)}
+          />
+        }
+
         renderItem={this.renderItem}
         keyExtractor={item => item.id.toString()}
+        renderSectionHeader={({ section: { title } }) => (
+          <Text h3>{title}</Text>
+        )}
         />
       </View>
     )
