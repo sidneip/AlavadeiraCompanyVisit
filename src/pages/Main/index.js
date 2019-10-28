@@ -23,8 +23,9 @@ class Main extends Component {
     }
   }
   componentDidMount(){
-    AsyncStorage.clear()
+    // AsyncStorage.clear()
     this.props.fetch()
+    this.props.navigation.openDrawer();
     let visits = _.chain(this.props.visits)
         // Group the elements of Array based on `color` property
         .groupBy("trajectory")

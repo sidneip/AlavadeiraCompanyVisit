@@ -1,17 +1,20 @@
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
-
+import { createDrawerNavigator } from 'react-navigation-drawer'
 import { createStackNavigator } from 'react-navigation-stack';
 import Main from '~/pages/Main/index';
 import Login from '~/pages/Login'
 import Visit from '~/pages/Visit'
 
-const AppStack = createStackNavigator(
+const AppStack = createDrawerNavigator(
   {
     Main: {
       screen: Main,
     }, 
     Visit: {
-      screen: Visit
+      screen: Visit,
+      navigationOptions: {
+        drawerLabel: () => null
+      }
     }
   },
   {

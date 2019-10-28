@@ -14,7 +14,7 @@ import styles from './style'
 class Visit extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
-      title: `Visita ${navigation.getParam('customName')}`,
+      title: `Visita ${navigation.getParam('customName')}`
     };
   };
   constructor(props){
@@ -44,6 +44,11 @@ class Visit extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <Button
+          title="CONFIRMAR VISITA"
+          containerStyle={{width: '100%'}}
+          onPress={() => this.readDeliveryItem()}
+        />
         {!this.state.showCamera && 
         <View style={styles.visitData}>
           <Card title="Entregas" >
