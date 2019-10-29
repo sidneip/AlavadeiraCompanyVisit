@@ -7,6 +7,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RNCamera } from 'react-native-camera';
 
+import { sendCheckin } from '../../store/ducks/visit' 
 import styles from './style'
 
 // import { Container } from './styles';
@@ -31,8 +32,10 @@ class Visit extends Component {
     this.setState({showCamera: !this.state.showCamera})
   }
 
+  sendCheckin(){
+    this.props.sendCheckin(this.props.visit.id, (new Date).toTimeString())
+  }
   barcodeRecognized(data){
-    console.log(data)
     if(data.barcodes.length > 0){
       this.setState({
         collecteds: [...this.state.collecteds, data.barcodes[0].data]
@@ -44,11 +47,20 @@ class Visit extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Button
-          title="CONFIRMAR VISITA"
-          containerStyle={{width: '100%'}}
-          onPress={() => this.readDeliveryItem()}
-        />
+        {this.props.visit.checkin ? (
+          <Button
+            title="CONFIRMAR VISITA"
+            containerStyle={{width: '100%', marginTop: 10}}
+            onPress={() => this.readDeliveryItem()}
+          />
+        ) : (
+          <Button
+            title="Marcar Chegada"
+            containerStyle={{width: '100%', marginTop: 10}}
+            onPress={() => this.sendCheckin()}
+          />
+        )
+        }
         {!this.state.showCamera && 
         <View style={styles.visitData}>
           <Card title="Entregas" >
@@ -106,10 +118,10 @@ const mapStateToProps = (state, props) => {
 };
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({}, dispatch);
+  bindActionCreators({ sendCheckin }, dispatch);
 
 
 export default connect(
   mapStateToProps,
-  // mapDispatchToProps
+  mapDispatchToProps
 )(Visit);

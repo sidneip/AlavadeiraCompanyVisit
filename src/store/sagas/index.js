@@ -63,9 +63,24 @@ function loginRequest(params){
   }
 }
 
+function* sendCheckinAction(){
+  yield takeLatest(VisitTypes.SEND_CHECKIN, sendCheckin)
+}
+
+function* sendCheckin({payload}){
+  try {
+    const body = {checked_in_at: payload.checked_in_at, visit_ids: [payload.visit_id], latitude: payload.latitude, longitude: payload.longitude}
+    yield put({ type: VisitTypes.CHECKIN, payload: body});
+    // response = api.post('/visits/checkin', body)
+  } catch (error) {
+    
+  }
+}
+
 export default function* rootSaga() {
   yield all([
     loginAction(),
-    fetchVisitsAction()
+    fetchVisitsAction(),
+    sendCheckinAction()
   ]);
 }

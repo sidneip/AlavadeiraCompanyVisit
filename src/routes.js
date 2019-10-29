@@ -4,6 +4,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import Main from '~/pages/Main/index';
 import Login from '~/pages/Login'
 import Visit from '~/pages/Visit'
+import Map from '~/pages/Map'
 
 const AppStack = createDrawerNavigator(
   {
@@ -14,7 +15,10 @@ const AppStack = createDrawerNavigator(
       screen: Visit,
       navigationOptions: {
         drawerLabel: () => null
-      }
+      },
+    },
+    Map: {
+      screen: Map
     }
   },
   {

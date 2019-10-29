@@ -4,7 +4,7 @@ import sagaPlugin from 'reactotron-redux-saga';
 
 if (__DEV__) {
   const tron = Reactotron.configure({
-    host: '192.168.0.101'
+    host: '192.0.0.16'
   })
     .use(reactotronRedux())
     .use(networking())

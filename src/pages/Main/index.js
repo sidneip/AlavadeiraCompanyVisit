@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 
 import { View, FlatList, StyleSheet, RefreshControl, ActivityIndicator, AsyncStorage, SectionList } from 'react-native';
-import { ListItem, Header, Button, Text} from 'react-native-elements'
+import { ListItem, Header, Button, Text, Icon} from 'react-native-elements'
 
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { fetch } from '../../store/ducks/visit'
 import { navigate } from '~/services/navigation';
+import { DrawerActions } from 'react-navigation-drawer';
 import _ from 'lodash'
 // import { Container } from './styles';
 
@@ -23,9 +24,7 @@ class Main extends Component {
     }
   }
   componentDidMount(){
-    // AsyncStorage.clear()
     this.props.fetch()
-    this.props.navigation.openDrawer();
     let visits = _.chain(this.props.visits)
         // Group the elements of Array based on `color` property
         .groupBy("trajectory")
@@ -56,6 +55,9 @@ class Main extends Component {
   render() {
     return(
       <View styles={styles.container}>
+        <Header
+          leftComponent={<Icon name="menu" onPress={() => this.props.navigation.dispatch(DrawerActions.openDrawer())} />}
+        />
         {this.props.loading &&
           <ActivityIndicator  style={styles.loading}  size="large"  color="#0000ff" />
         }
