@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, BackHandler } from 'react-native';
 import { Button, Text, Card, Icon, ListItem } from 'react-native-elements'
 
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RNCamera } from 'react-native-camera';
-
-import { sendCheckin } from '../../store/ducks/visit' 
+import _ from 'lodash'
+import { sendCheckin, deliverItem, collectItem, finishVisit } from '../../store/ducks/visit' 
 import styles from './style'
-
+import { NavigationActions } from 'react-navigation'
 // import { Container } from './styles';
 
 class Visit extends Component {
@@ -28,30 +28,67 @@ class Visit extends Component {
     }
   }
 
-  readDeliveryItem(){
-    this.setState({showCamera: !this.state.showCamera})
+  readItem(action){
+    this.setState({showCamera: !this.state.showCamera, action: action})
   }
 
   sendCheckin(){
     this.props.sendCheckin(this.props.visit.id, (new Date).toTimeString())
   }
+
+  readCollectItem(data){
+    this.props.collectItem(this.props.visit.id, data)
+  }
+
+  readDeliverItem(data){
+    this.props.deliverItem(this.props.visit.id, data)
+  }
+
   barcodeRecognized(data){
     if(data.barcodes.length > 0){
-      this.setState({
-        collecteds: [...this.state.collecteds, data.barcodes[0].data]
-      })
+      switch (this.state.action) {
+        case 'collect':
+          this.readCollectItem(data.barcodes[0].data)
+          break;
+        case 'deliver':
+          this.readDeliverItem(data.barcodes[0].data)
+          break;
+        default:
+          alert('Tente novamente.')
+          break;
+      }
       this.setState({showCamera: false})
     }
   }
 
-  render() {
+  itemStatusIcon(code){
+    if(this.props.visit.delivered && _.contains(this.props.visit.delivered, code)){
+      return { name: 'check', type: 'feather', color: 'green' }
+    }else{
+      return { name: 'alert-circle', type: 'feather', color: 'red' }
+    }
+  }
+
+  deliverableTitle(code){
+    const item = _.findLast(this.props.visit.deliverables, function(item) {
+      return item.barcode.toString() == code.toString()
+    })
+    console.log(item)
+    if(item && item.loaded){
+      return "Carregado" 
+    }else{
+      return ''
+    }
+  }
+
+   render() {
     return (
       <View style={styles.container}>
-        {this.props.visit.checkin ? (
+        {this.props.visit && this.props.visit.checkin ? (
           <Button
             title="CONFIRMAR VISITA"
             containerStyle={{width: '100%', marginTop: 10}}
-            onPress={() => this.readDeliveryItem()}
+            onPress={() => this.props.finishVisit(visit.id)}
           />
         ) : (
           <Button
@@ -73,6 +110,8 @@ class Visit extends Component {
                     title={delivery.barcode}
                     subtitle="teste"
                     leftIcon={{ name: 'shopping-bag', type: 'feather', color: '#517fa4' }}
+                    rightIcon={this.itemStatusIcon(delivery.barcode)}
+                    rightTitle={this.deliverableTitle(delivery.barcode)}
                   />
                 );
               })
@@ -93,7 +132,7 @@ class Visit extends Component {
           <Button
           title="Fechar"
           containerStyle={{flex: 1, flexWrap: 'nowrap', justifyContent: 'flex-end', alignItems: 'center'}}
-          onPress={() => this.readDeliveryItem()}
+          onPress={() => this.readItem('close')}
         />
         </View>
         }
@@ -101,11 +140,12 @@ class Visit extends Component {
         <Button
           title="Entregar"
           containerStyle={{width: '50%'}}
-          onPress={() => this.readDeliveryItem()}
+          onPress={() => this.readItem('deliver')}
         />
         <Button
           title="Coletar"
           containerStyle={{paddingLeft: 10, width: '50%'}}
+          onPress={() => this.readItem('collect')}
         />
         </View>
       </View>
@@ -118,7 +158,7 @@ const mapStateToProps = (state, props) => {
 };
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ sendCheckin }, dispatch);
+  bindActionCreators({ sendCheckin, deliverItem, collectItem, finishVisit }, dispatch);
 
 
 export default connect(

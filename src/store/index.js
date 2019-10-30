@@ -1,4 +1,9 @@
 import { createStore, compose, applyMiddleware } from 'redux';
+import {
+  offlineMiddleware,
+  suspendSaga,
+  consumeActionMiddleware
+} from "redux-offline-queue";
 import createSagaMiddleware from 'redux-saga';
 import { persistStore, persistReducer, autoMergeLevel2 } from 'redux-persist';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -11,7 +16,11 @@ const sagaMonitor = __DEV__ ? console.tron.createSagaMonitor() : null;
 
 const sagaMiddleware = createSagaMiddleware({ sagaMonitor });
 
-middlewares.push(sagaMiddleware);
+middlewares.push(offlineMiddleware());
+middlewares.push(suspendSaga(sagaMiddleware));
+middlewares.push(consumeActionMiddleware());
+
+// middlewares.push(sagaMiddleware);
 
 const composer = __DEV__
   ? compose(

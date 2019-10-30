@@ -1,8 +1,9 @@
-import { put, call, all, takeLatest } from 'redux-saga/effects';
+import { spawn, put, call, all, takeLatest } from 'redux-saga/effects';
 import { navigate } from '~/services/navigation'
 import { Types as AuthTypes } from '../ducks/auth'
 import { Types as VisitTypes } from '../ducks/visit' 
 import { AsyncStorage } from 'react-native'
+import { startWatchingNetworkConnectivity } from "./offline";
 import api from '../../services/api'
 
 
@@ -14,10 +15,9 @@ function* fetchVisitsAction(){
 function* fetchVisits({payload}){
   try {
     let response = yield call(fetchVisitsRequest)
-    console.log(response.data.data)
     yield put({ type: VisitTypes.UPDATE_VISITS, payload: response.data.data.visits })
   } catch (error) {
-    
+    console.log(error)
   }
 }
 
@@ -37,21 +37,19 @@ function* login({payload}){
   // let response = yield call(api.post, '/authenticate', {email: payload.username, password: payload.password})
   try {
     let response = yield call(loginRequest, payload)
-    console.tron.logImportant(response.data)
-    saveDriverData(response)
+    yield call(saveDriverData, response)
     // yield put({ type: AuthTypes.SUCCESS_LOGIN, payload: response.data });
     // yield call(saveToken, response.data.token)
     yield call(navigate, 'App')
   } catch (error) {
     console.log(error)
-    console.tron.logImportant(error)
   }
 }
 
-async function saveDriverData(response) {
+function* saveDriverData(response) {
   console.log(response)
-  await AsyncStorage.setItem('@driver/token', response.data.data.token);
-  await AsyncStorage.setItem('@driver/trajectories_today', response.data.data.trajectory_today);
+  AsyncStorage.setItem('@driver/token', response.data.data.token);
+  AsyncStorage.setItem('@driver/trajectories_today', response.data.data.trajectory_today);
   console.log('passou');
 }
 
@@ -77,8 +75,13 @@ function* sendCheckin({payload}){
   }
 }
 
+function* watchNetwork(){
+  yield spawn(startWatchingNetworkConnectivity)
+}
+
 export default function* rootSaga() {
   yield all([
+    watchNetwork(),
     loginAction(),
     fetchVisitsAction(),
     sendCheckinAction()

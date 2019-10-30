@@ -8,6 +8,8 @@ const Logo = require('./../../assets/logo.png');
 import { login } from '../../store/ducks/auth'
 import { navigate } from '~/services/navigation';
 import { getToken } from '../../data/driver'
+import {persistor} from '../../store';
+import colors from '~/styles/colors';
 
 // import { Container } from './styles';
 
@@ -22,9 +24,10 @@ class Login extends Component {
   }
 
   componentDidMount(){
+    // AsyncStorage.clear()
+    // persistor.purge()
     AsyncStorage.getItem("@driver/token")
       .then(value => {
-        console.log(value)
         if(value){
           navigate('App');
         }
@@ -69,7 +72,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderWidth: 0.5,
     borderColor: '#d6d7da',
-    backgroundColor: '#64beb2'
+    backgroundColor: colors.primary
   },
   title: {
     fontSize: 40,

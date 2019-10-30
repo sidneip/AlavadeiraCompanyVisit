@@ -1,10 +1,11 @@
-import { createAppContainer, createSwitchNavigator } from 'react-navigation';
+import { createAppContainer, createSwitchNavigator} from 'react-navigation';
 import { createDrawerNavigator } from 'react-navigation-drawer'
 import { createStackNavigator } from 'react-navigation-stack';
 import Main from '~/pages/Main/index';
 import Login from '~/pages/Login'
 import Visit from '~/pages/Visit'
 import Map from '~/pages/Map'
+import Visits from '~/pages/Visits'
 
 const AppStack = createDrawerNavigator(
   {
@@ -16,6 +17,9 @@ const AppStack = createDrawerNavigator(
       navigationOptions: {
         drawerLabel: () => null
       },
+    },
+    Visits: {
+      screen: Visits,
     },
     Map: {
       screen: Map
