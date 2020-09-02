@@ -33,7 +33,7 @@ class Visit extends Component {
   }
 
   sendCheckin(){
-    this.props.sendCheckin(this.props.visit.id, (new Date).toTimeString())
+    this.props.sendCheckin([this.props.visit.id], (new Date).toTimeString())
   }
 
   readCollectItem(data){
@@ -84,19 +84,20 @@ class Visit extends Component {
    render() {
     return (
       <View style={styles.container}>
-        {this.props.visit && this.props.visit.checkin ? (
+        {this.props.visit && this.props.visit.checkin &&
           <Button
             title="CONFIRMAR VISITA"
             containerStyle={{width: '100%', marginTop: 10}}
-            onPress={() => this.props.finishVisit(visit.id)}
+            onPress={() => this.props.finishVisit(this.props.visit.id)}
           />
-        ) : (
+        }
+        {console.log(this.props.visit)}
+        {this.props.visit && !this.props.visit.checkin && this.props.visit.delivery_status == 'started' &&
           <Button
             title="Marcar Chegada"
             containerStyle={{width: '100%', marginTop: 10}}
             onPress={() => this.sendCheckin()}
           />
-        )
         }
         {!this.state.showCamera && 
         <View style={styles.visitData}>

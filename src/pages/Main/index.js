@@ -24,6 +24,7 @@ class Main extends Component {
       visits: [],
       refreshing: false
     }
+    this.visitOfTheTime = this.visitOfTheTime.bind(this);
   }
   componentDidMount(){
     this.props.fetch()
@@ -43,7 +44,7 @@ class Main extends Component {
         title={item.customer.name}
         subtitle={`${item.address.street} - ${item.address.number}`}
         leftIcon={{ name: 'directions-car' }}
-        onPress={() => { this.props.navigation('Visit', {visitId: item.id, customName: item.customer.name})}}
+        onPress={() => { navigate('Visit', {visitId: item.id, customName: item.customer.name})}}
         bottomDivider
         chevron
       />
@@ -54,10 +55,29 @@ class Main extends Component {
     this.props.fetch()
   }
 
+  visitOfTheTime(visit){
+    let visits = _.filter(this.state.visits, (group) => { return group.title == visit[0].trajectory})[0].data
+    const firstVisits = visits.slice(0,4)
+    const firstVisitsFlatted = _.flatten(firstVisits);
+    const firstVisitsIds = _.map(firstVisitsFlatted, (visit) => {return visit.id})
+    const visitOfTime = firstVisitsIds.includes(visit[0].id)
+
+    if(visitOfTime){
+      return { name: 'check', color: 'green' }
+    }else{
+      return { name: 'directions-car' }
+    }
+  }
+
   render() {
-    console.log(colors.primary)
     return(
       <View styles={styles.container}>
+        <Button
+          title="Atualizar"
+          containerStyle={{width: '100%', marginTop: 10}}
+          onPress={() => this.props.fetch()}
+        />
+
         <Header
           backgroundColor={colors.primary}
           centerComponent={{ text: 'A Lavadeira', style: { color: '#fff', fontSize: 20 } }}
@@ -86,7 +106,7 @@ class Main extends Component {
                   <ListItem
                     title={`${node['0'].address.street} - ${node['0'].address.number}`}
                     subtitle={_.compact(Object.keys(node).map((k) => node[k].id ? node[k].customer.name : null )).toString()}
-                    leftIcon={{ name: 'directions-car' }}
+                    leftIcon={this.visitOfTheTime(node)}
                     onPress={() => { navigate('Visits', {address: `${node['0'].address.cep}-${node['0'].address.number}`})}}
                     bottomDivider
                     chevron
@@ -103,7 +123,7 @@ class Main extends Component {
 }
 
 const mapStateToProps = state => {
-  return { visits: state.visitReducer.visits, loading: state.visitReducer.loading }
+  return { visits: _.filter(state.visitReducer.visits, (visit) => { return !visit.visited }), loading: state.visitReducer.loading }
 }
 
 const mapDispatchToProps = dispatch =>

@@ -24,9 +24,10 @@ export default function reducer(state = initialState, action) {
     case Types.UPDATE_VISITS:
       return { ...state, visits: action.payload, loading: false }
     case Types.CHECKIN:
+      console.log(action.payload)
       return {
         ...state,
-        visits: state.visits.map(visit => visit.id === action.payload.visit_ids[0] ?
+        visits: state.visits.map(visit => action.payload.visit_ids.includes(visit.id) ?
           { ...visit, checkin: action.payload.checked_in_at } : 
           visit
         ) 
@@ -49,8 +50,9 @@ export default function reducer(state = initialState, action) {
         ...state,
         visits: state.visits.map((visit) => {
           if(visit.id === action.payload.visit_id){
-            const delivered = visit.delivered || []
-            const deliverables = visit.deliverables.map(deliver => deliver.barcode === action.payload.bag_code ? {...deliver, deliver: true} : deliver )
+            let delivered = (visit.delivered || [])
+            alert(delivered)
+            let deliverables = visit.deliverables.map(deliver => deliver.barcode === action.payload.bag_code ? {...deliver, deliver: true} : deliver )
             return {...visit, delivered: delivered.push(action.payload.bag_code), deliverables: deliverables}
           }else{
             return visit
@@ -85,11 +87,12 @@ export function fetch(){
   }
 }
 
-export function sendCheckin(visit_id, checked_in_at, location){
+export function sendCheckin(visit_ids, checked_in_at, location){
+  console.log('a:' + visit_ids)
   return {
     type: Types.SEND_CHECKIN,
     payload: {
-      visit_id: visit_id,
+      visit_ids: visit_ids,
       checked_in_at: checked_in_at 
     }
   }

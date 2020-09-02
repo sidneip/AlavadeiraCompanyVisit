@@ -9,6 +9,7 @@ import { RNCamera } from 'react-native-camera';
 import _ from 'lodash'
 import { sendCheckin, deliverItem, collectItem, finishVisit } from '../../store/ducks/visit' 
 import styles from './style'
+import colors from '~/styles/colors'
 import { navigate } from '~/services/navigation';
 import { NavigationActions } from 'react-navigation'
 
@@ -24,7 +25,7 @@ class Visits extends Component {
   constructor(props){
     super(props);
     this.state = {
-      visitId: props.navigation.getParam('address'),
+      address: props.navigation.getParam('address'),
       showCamera: false,
       action: '',
       collecteds: []
@@ -36,7 +37,7 @@ class Visits extends Component {
   }
 
   sendCheckin(){
-    this.props.sendCheckin(this.props.visit.id, (new Date).toTimeString())
+    this.props.sendCheckin(this.props.visits.map(visit => visit.id), (new Date).toTimeString())
   }
 
   readCollectItem(data){
@@ -45,6 +46,7 @@ class Visits extends Component {
 
   readDeliverItem(data){
     this.props.deliverItem(this.props.visit.id, data)
+    alert(this.props.visit.delivered);
   }
 
   renderItem(item){
@@ -69,6 +71,15 @@ class Visits extends Component {
           data={this.props.visits}
           renderItem={({item}) => { return this.renderItem(item)}}
         />
+        <View style={styles.footerButtons}>
+          {!_.isString(this.props.visits[0].checkin) &&
+          <Button
+            title="Marcar Chegada"
+            containerStyle={{width: '100%', backgroundColor: colors.primary}}
+            onPress={() => this.sendCheckin()}
+          />
+          }
+        </View>
       </View>
     )
   }

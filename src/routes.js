@@ -6,7 +6,7 @@ import Login from '~/pages/Login'
 import Visit from '~/pages/Visit'
 import Map from '~/pages/Map'
 import Visits from '~/pages/Visits'
-
+import Logout from '~/components/Logout'
 const AppStack = createDrawerNavigator(
   {
     Main: {
@@ -23,6 +23,9 @@ const AppStack = createDrawerNavigator(
     },
     Map: {
       screen: Map
+    },
+    Logout: {
+      screen: Logout
     }
   },
   {

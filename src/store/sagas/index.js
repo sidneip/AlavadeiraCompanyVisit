@@ -5,6 +5,7 @@ import { Types as VisitTypes } from '../ducks/visit'
 import { AsyncStorage } from 'react-native'
 import { startWatchingNetworkConnectivity } from "./offline";
 import api from '../../services/api'
+import { sendCheckinAction } from './visit'
 
 
 
@@ -15,6 +16,7 @@ function* fetchVisitsAction(){
 function* fetchVisits({payload}){
   try {
     let response = yield call(fetchVisitsRequest)
+    console.log(response)
     yield put({ type: VisitTypes.UPDATE_VISITS, payload: response.data.data.visits })
   } catch (error) {
     console.log(error)
@@ -25,7 +27,7 @@ function fetchVisitsRequest(){
   try {
     return api.get('/visits', {})
   } catch (error) {
-    
+    console.log(error)
   }
 }
 
@@ -42,15 +44,14 @@ function* login({payload}){
     // yield call(saveToken, response.data.token)
     yield call(navigate, 'App')
   } catch (error) {
+    alert('Login ou Senha invalidos.')
     console.log(error)
   }
 }
 
 function* saveDriverData(response) {
-  console.log(response)
   AsyncStorage.setItem('@driver/token', response.data.data.token);
   AsyncStorage.setItem('@driver/trajectories_today', response.data.data.trajectory_today);
-  console.log('passou');
 }
 
 function loginRequest(params){
@@ -61,19 +62,6 @@ function loginRequest(params){
   }
 }
 
-function* sendCheckinAction(){
-  yield takeLatest(VisitTypes.SEND_CHECKIN, sendCheckin)
-}
-
-function* sendCheckin({payload}){
-  try {
-    const body = {checked_in_at: payload.checked_in_at, visit_ids: [payload.visit_id], latitude: payload.latitude, longitude: payload.longitude}
-    yield put({ type: VisitTypes.CHECKIN, payload: body});
-    // response = api.post('/visits/checkin', body)
-  } catch (error) {
-    
-  }
-}
 
 function* watchNetwork(){
   yield spawn(startWatchingNetworkConnectivity)
